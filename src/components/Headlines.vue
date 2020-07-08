@@ -1,35 +1,46 @@
 <template>
   <v-content>
-    <v-container grid-list-lg class="my-5 ml-auto mr-auto">
+    <v-container grid-list-xl class="my-5 ml-auto mr-auto">
       <v-layout row wrap>
         <v-flex
           xs12
           sm6
           md4
-          lg3
+          lg4
           :key="headline.id"
           v-for="headline in allHeadlines"
         >
-          <v-card class="mx-auto" color="grey.lighten-4" max-width="350">
-            <v-card-title>
-              <span
-                class="d-inline-block text-truncate title font-weight-light"
-                style="max-width: 300px;"
+          <v-hover>
+            <template v-slot:default="{ hover }">
+              <v-card
+                class="mx-auto"
+                color="#212121"
+                dark
+                max-width="400"
+                style="position: relative;"
               >
-                {{ headline.title }}
-              </span>
-            </v-card-title>
+                <v-img
+                  :aspect-ratio="16 / 9"
+                  dark
+                  v-bind:src="headline.urlToImage"
+                  gradient="to bottom, rgba(100,115,201,.33), rgba(34, 34, 34,1)"
+                >
+                  <v-card-text
+                    class="subtitle-1 font-weight-medium"
+                    style="position: absolute; bottom: 0;"
+                  >
+                    {{ headline.title }}
+                  </v-card-text>
 
-            <v-card-text class="body-2">
-              <span>{{ headline.description.slice(0, 90) }}..</span>
-            </v-card-text>
-
-            <v-card-actions class="ml-2">
-              <v-list-item-content>
-                <v-list-item-title>SourceName</v-list-item-title>
-              </v-list-item-content>
-            </v-card-actions>
-          </v-card>
+                  <v-fade-transition>
+                    <v-overlay v-if="hover" absolute color="#26c6da">
+                      <v-btn>Read more</v-btn>
+                    </v-overlay>
+                  </v-fade-transition>
+                </v-img>
+              </v-card>
+            </template>
+          </v-hover>
         </v-flex>
       </v-layout>
     </v-container>
@@ -37,9 +48,15 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 export default {
   name: "Headlines",
-  computed: mapGetters(["allHeadlines"]) //import headlines
+  methods: {
+    ...mapActions(["fetchHeadlines"])
+  },
+  computed: mapGetters(["allHeadlines"]), //import headlines
+  created() {
+    this.fetchHeadlines();
+  }
 };
 </script>
